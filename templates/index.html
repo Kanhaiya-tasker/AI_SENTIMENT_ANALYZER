@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Sentiment Analyzer</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='favicon.png') }}"
+    />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #1d2671, #c33764);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        flex-direction: column;
+        text-align: center;
+        margin: 0;
+      }
+      h1 {
+        font-size: 2.2rem;
+        margin-bottom: 20px;
+        letter-spacing: 1px;
+      }
+      textarea {
+        width: 320px;
+        height: 120px;
+        border-radius: 10px;
+        border: none;
+        outline: none;
+        padding: 10px;
+        font-size: 1rem;
+        resize: none;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      }
+      button {
+        background-color: #ff4081;
+        border: none;
+        padding: 10px 25px;
+        color: white;
+        font-size: 1rem;
+        border-radius: 10px;
+        margin-top: 15px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      button:hover {
+        background-color: #e91e63;
+      }
+      #result {
+        margin-top: 20px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        transition: all 0.5s ease;
+      }
+      .positive {
+        color: #00ff9d;
+        animation: pulse 1.5s infinite;
+      }
+      .negative {
+        color: #ff4d4d;
+        animation: shake 0.5s;
+      }
+      .neutral {
+        color: #ffd700;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-5px);
+        }
+        75% {
+          transform: translateX(5px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🧠 AI Sentiment Analyzer</h1>
+    <form id="analyzeForm">
+      <textarea
+        id="textInput"
+        placeholder="Type something to analyze sentiment..."
+      ></textarea
+      ><br />
+      <button id="analyzeBtn" type="button">Analyze</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+      document
+        .getElementById("analyzeBtn")
+        .addEventListener("click", async () => {
+          const inputText = document.getElementById("textInput").value.trim();
+          const resultDiv = document.getElementById("result");
+
+          if (!inputText) {
+            resultDiv.innerHTML = "⚠️ Please enter some text.";
+            return;
+          }
+
+          resultDiv.innerHTML = "<b>Analyzing...</b>";
+
+          try {
+            const response = await fetch("/analyze", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ text: inputText }),
+            });
+
+            const data = await response.json();
+
+            if (data.sentiment === "Positive") {
+              resultDiv.innerHTML = "🟢 Positive 😊";
+            } else if (data.sentiment === "Negative") {
+              resultDiv.innerHTML = "🔴 Negative 😞";
+            } else {
+              resultDiv.innerHTML = "🟡 Neutral 😐";
+            }
+          } catch (error) {
+            resultDiv.innerHTML = "❌ Error analyzing text.";
+            console.error("Error:", error);
+          }
+        });
+    </script>
+  </body>
+</html>
