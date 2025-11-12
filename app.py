@@ -103,6 +103,5 @@ def favicon():
                                'favicon.png', mimetype='image/png')
 
 if __name__ == '__main__':
-    if not os.environ.get("VERCEL"):
-        app.run(debug=True)
+    app.run(debug=True)
 
